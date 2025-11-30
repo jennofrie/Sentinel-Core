@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-rajdhani: 'Rajdhani', sans-serif;
+    --font-jetbrains-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    @apply bg-slate-950 text-white;
+    background: radial-gradient(ellipse at center, rgb(15 23 42) 0%, rgb(2 6 23) 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply border border-white/10 backdrop-blur-md bg-white/5;
+  }
+}
+
