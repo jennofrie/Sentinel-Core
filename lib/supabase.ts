@@ -20,8 +20,33 @@ export const supabase: SupabaseClient = createClient(
   supabaseAnonKey || "",
   {
     auth: {
-      persistSession: false, // Don't persist auth sessions for this use case
-      autoRefreshToken: false,
+      persistSession: true, // Persist auth sessions for login functionality
+      autoRefreshToken: true, // Automatically refresh tokens
     },
   }
 );
+
+/**
+ * Get the current user session
+ * Useful for checking authentication status
+ */
+export async function getSession() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error("Error getting session:", error);
+    return null;
+  }
+  return session;
+}
+
+/**
+ * Get the current authenticated user
+ */
+export async function getCurrentUser() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) {
+    console.error("Error getting user:", error);
+    return null;
+  }
+  return user;
+}

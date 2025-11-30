@@ -1,6 +1,7 @@
 "use client";
 
 import LayoutShell from "@/components/LayoutShell";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useEffect, useState } from "react";
 import { getHistory, type HistoryEntry } from "@/lib/history-service";
 import { Database, RefreshCw, Search, Clock, Shield } from "lucide-react";
@@ -23,9 +24,10 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <LayoutShell>
-      <div className="p-8">
-        <div className="mb-6 flex items-center justify-between">
+    <ProtectedRoute>
+      <LayoutShell>
+        <div className="p-8">
+          <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-2">HISTORY</h1>
             <p className="text-slate-400 font-mono text-sm">
@@ -116,6 +118,7 @@ export default function HistoryPage() {
           </div>
         </div>
       </div>
-    </LayoutShell>
+      </LayoutShell>
+    </ProtectedRoute>
   );
 }

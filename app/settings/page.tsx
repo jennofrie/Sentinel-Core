@@ -1,9 +1,11 @@
 import LayoutShell from "@/components/LayoutShell";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import LogTerminal from "@/components/settings/LogTerminal";
 
 export default function SettingsPage() {
   return (
-    <LayoutShell>
+    <ProtectedRoute>
+      <LayoutShell>
       <div className="p-8">
         <div className="mb-6">
           <h1 className="text-4xl font-bold mb-2">SETTINGS</h1>
@@ -28,7 +30,8 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </LayoutShell>
+      </LayoutShell>
+    </ProtectedRoute>
   );
 }
 

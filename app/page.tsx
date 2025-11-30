@@ -1,17 +1,15 @@
-import LayoutShell from "@/components/LayoutShell";
-import CommandCenter from "@/components/dashboard/CommandCenter";
+import LandingNavbar from "@/components/landing/LandingNavbar";
+import HeroSection from "@/components/landing/HeroSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import PWAInstallButton from "@/components/pwa/PWAInstallButton";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <LayoutShell>
-      <div className="p-8">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">DASHBOARD</h1>
-          <p className="text-slate-400 font-mono text-sm">Threat Intelligence & Analysis Center</p>
-        </div>
-        <CommandCenter />
-      </div>
-    </LayoutShell>
+    <div className="min-h-screen bg-slate-950">
+      <LandingNavbar />
+      <HeroSection />
+      <FeaturesSection />
+      <PWAInstallButton />
+    </div>
   );
 }
-
