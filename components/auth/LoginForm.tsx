@@ -22,13 +22,23 @@ export default function LoginForm() {
       const { error } = await signIn(email, password);
       
       if (error) {
-        setError(error.message || "Failed to sign in. Please check your credentials.");
+        // Provide more specific error messages
+        const errorMessage = error.message || "Failed to sign in. Please check your credentials.";
+        setError(errorMessage);
       } else {
         router.push("/dashboard");
         router.refresh();
       }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+    } catch (err: any) {
+      // Handle unexpected errors
+      const errorMessage = err?.message || "An unexpected error occurred. Please try again.";
+      
+      // Provide helpful message for network errors
+      if (errorMessage.toLowerCase().includes("fetch") || errorMessage.toLowerCase().includes("network")) {
+        setError("Unable to connect to authentication service. Please check your internet connection and try again.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

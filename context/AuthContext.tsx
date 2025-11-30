@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface AuthContextType {
   user: User | null;
@@ -21,10 +21,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check if Supabase is configured before trying to get session
+    if (!isSupabaseConfigured()) {
+      // Supabase not configured - skip auth initialization
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
+    }).catch(() => {
+      // If session fetch fails, just set loading to false
       setLoading(false);
     });
 
@@ -41,11 +51,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return {
+        error: {
+          message: "Authentication is not configured. Supabase credentials are missing. Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.",
+        },
+      };
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        // Provide more helpful error messages
+        if (error.message?.includes("Invalid login credentials")) {
+          return { error: { ...error, message: "Invalid email or password. Please try again." } };
+        }
+        if (error.message?.includes("fetch") || error.message?.includes("network")) {
+          return { error: { ...error, message: "Network error: Unable to connect to authentication service." } };
+        }
+      }
+      
+      return { error };
+    } catch (err: any) {
+      // Handle unexpected errors
+      const errorMessage = err?.message || "An unexpected error occurred during sign in.";
+      
+      if (errorMessage.toLowerCase().includes("fetch") || errorMessage.toLowerCase().includes("network")) {
+        return {
+          error: {
+            message: "Failed to connect to authentication service. This usually means Supabase is not properly configured or there's a network issue.",
+          },
+        };
+      }
+      
+      return {
+        error: {
+          message: errorMessage,
+        },
+      };
+    }
   };
 
   const signOut = async () => {

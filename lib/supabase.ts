@@ -34,7 +34,12 @@ export const supabase: SupabaseClient = createClient(
 
 // Export a helper to check if Supabase is properly configured
 export function isSupabaseConfigured(): boolean {
-  return !!(supabaseUrl && supabaseAnonKey);
+  return !!(
+    supabaseUrl && 
+    supabaseAnonKey && 
+    !supabaseUrl.includes("placeholder") && 
+    supabaseUrl.startsWith("https://")
+  );
 }
 
 /**
