@@ -13,18 +13,29 @@ if (typeof window !== "undefined") {
   });
 }
 
-// Create and export the Supabase client
-// Use empty strings as fallback - the history-service will check and handle gracefully
+// Create a safe Supabase client that handles missing env vars gracefully
+// This prevents build errors when env vars are not set during prerender/build
+// Use valid placeholder values that Supabase will accept but won't work at runtime
+const PLACEHOLDER_URL = "https://placeholder.supabase.co";
+const PLACEHOLDER_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTY4MDAsImV4cCI6MTk2MDc3MjgwMH0.placeholder";
+
+// Create client with fallback to prevent build crashes
+// If env vars are missing, use placeholder values that won't throw during build
 export const supabase: SupabaseClient = createClient(
-  supabaseUrl || "",
-  supabaseAnonKey || "",
+  supabaseUrl || PLACEHOLDER_URL,
+  supabaseAnonKey || PLACEHOLDER_KEY,
   {
     auth: {
-      persistSession: true, // Persist auth sessions for login functionality
-      autoRefreshToken: true, // Automatically refresh tokens
+      persistSession: supabaseUrl ? true : false, // Only persist if properly configured
+      autoRefreshToken: supabaseUrl ? true : false,
     },
   }
 );
+
+// Export a helper to check if Supabase is properly configured
+export function isSupabaseConfigured(): boolean {
+  return !!(supabaseUrl && supabaseAnonKey);
+}
 
 /**
  * Get the current user session
